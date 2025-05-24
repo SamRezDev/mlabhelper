@@ -3,94 +3,160 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QueryLab Access</title>
+    <title>Lab Price Checker</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        padding: 2rem;
-        max-width: 600px;
-        margin: auto;
-      }
-      .hidden {
-        display: none;
-      }
-      .center {
-        text-align: center;
-      }
-      input,
-      button {
-        padding: 10px;
-        margin: 10px 0;
-        width: 100%;
+      * {
         box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
-      #output {
-        white-space: pre-wrap;
+
+      body {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: "Segoe UI", sans-serif;
+        background-color: #f4f4f4;
+      }
+
+      .container,
+      .login {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 500px;
+        text-align: center;
+        animation: fadeIn 0.5s ease-in-out;
+      }
+
+      .login {
+        background-color: #eaf0ff;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      h1 {
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+        color: #333;
+      }
+
+      input {
+        width: 100%;
+        padding: 0.7rem;
+        font-size: 1rem;
+        margin-bottom: 1rem;
         border: 1px solid #ccc;
-        padding: 1rem;
-        margin-top: 1rem;
-        background: #f9f9f9;
-        cursor: text;
+        border-radius: 8px;
+        transition: border 0.2s;
       }
-      #loader {
-        margin-top: 20px;
-        font-style: italic;
+
+      input:focus {
+        border-color: #007bff;
+        outline: none;
+      }
+
+      button {
+        padding: 0.7rem 1.5rem;
+        font-size: 1rem;
+        border: none;
+        background-color: #007bff;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      .result {
+        margin-top: 1.5rem;
+        background-color: #f0f0f0;
+        padding: 1rem;
+        border-radius: 8px;
+        font-family: monospace;
+        white-space: pre-wrap;
+        position: relative;
+      }
+
+      .copy-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #333;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 0.3rem 0.6rem;
+        cursor: pointer;
+        font-size: 0.8rem;
+      }
+
+      .loading {
+        margin-top: 1rem;
+        color: #888;
       }
     </style>
   </head>
   <body>
-    <!-- 1. Show login screen first -->
-    <div id="login-screen">
-      <h2>MLAB Helper</h2>
-      <input type="text" id="password" placeholder="Enter the password" />
-      <button onclick="login()">Login</button>
+    <!-- LOGIN STEP -->
+    <div id="login" class="login">
+      <h1>🔐 Enter Password</h1>
+      <input type="password" id="password" placeholder="Enter password..." />
+      <button onclick="savePassword()">Continue</button>
+      <div id="loginError" style="color: red; margin-top: 1rem; display: none">
+        Incorrect password.
+      </div>
     </div>
 
-    <!-- 2. After login, show QueryLab UI -->
-    <div id="querylab-screen" class="hidden">
-      <h2>Welcome to MLAB Helper</h2>
-      <h3>
-        Put whatever products ,and we'll give you a list with the according
-        prices
-      </h3>
-      <input type="text" id="query" placeholder="Enter your query..." />
-      <button onclick="sendQuery()">Run Query</button>
-
-      <!-- 3. Show loading animation while waiting for n8n response -->
-      <div id="loader" class="hidden">🔄 Somone is cooking...</div>
-
-      <div id="output" class="hidden"></div>
-      <button id="copyBtn" class="hidden" onclick="copyToClipboard()">
-        📋 Copy
-      </button>
+    <!-- MAIN APP -->
+    <div id="app" class="container" style="display: none">
+      <h1>🧪 Lab Price Checker</h1>
+      <input type="text" id="query" placeholder="Enter test name..." />
+      <button onclick="submitQuery()">Submit</button>
+      <div id="loading" class="loading" style="display: none">
+        ⏳ Fetching data...
+      </div>
+      <div id="result" class="result" style="display: none">
+        <button class="copy-btn" onclick="copyResult()">Copy</button>
+        <pre id="outputText"></pre>
+      </div>
     </div>
 
     <script>
-      let password = "";
-      function login() {
-        password = document.getElementById("password").value.trim();
-        if (!password) return alert("Please enter the password.");
-        document.getElementById("login-screen").classList.add("hidden");
-        document.getElementById("querylab-screen").classList.remove("hidden");
+      let passwordR = "";
+      function savePassword() {
+        passwordR = document.getElementById("password").value;
+
+        document.getElementById("login").style.display = "none";
+        document.getElementById("app").style.display = "block";
       }
 
-      async function sendQuery() {
-        const query = document.getElementById("query").value.trim();
-        if (!query) return alert("Please enter a query.");
+      async function submitQuery() {
+        const query = document.getElementById("query").value;
+        const resultDiv = document.getElementById("result");
+        const loadingDiv = document.getElementById("loading");
+        const outputText = document.getElementById("outputText");
 
-        const loader = document.getElementById("loader");
-        const output = document.getElementById("output");
-        const copyBtn = document.getElementById("copyBtn");
-
-        output.classList.add("hidden");
-        copyBtn.classList.add("hidden");
-        loader.classList.remove("hidden");
+        resultDiv.style.display = "none";
+        loadingDiv.style.display = "block";
 
         try {
-          const username = "placeholderIDC";
-          const passwordR = password;
-
-          const token = btoa(`${username}:${passwordR}`); // base64 encode
+          const token = btoa(`${"placeholderIDC"}:${passwordR}`); // base64 encode
           // Example GET request to your n8n endpoint with QueryLab param
           const res = await fetch(
             ` https://pika-poetic-crawdad.ngrok-free.app/webhook/80a265b1-0ad8-440c-937f-4973df7b9b48?QueryLab=${encodeURIComponent(
@@ -105,26 +171,21 @@
             }
           );
 
-          if (!res.ok) throw new Error("Server error");
           const data = await res.json();
-          console.log(data);
 
-          loader.classList.add("hidden");
-          output.textContent = data.myField || JSON.stringify(data, null, 2);
-          output.classList.remove("hidden");
-          copyBtn.classList.remove("hidden");
+          outputText.textContent =
+            data.myField || JSON.stringify(data, null, 2);
+          loadingDiv.style.display = "none";
+          resultDiv.style.display = "block";
         } catch (err) {
-          loader.classList.add("hidden");
-          output.textContent = "⚠️ An error occurred: " + err.message;
-          output.classList.remove("hidden");
+          loadingDiv.textContent = "⚠️ An error occurred. Please try again.";
         }
       }
 
-      function copyToClipboard() {
-        const text = document.getElementById("output").textContent;
-        navigator.clipboard.writeText(text).then(() => {
-          alert("Copied to clipboard!");
-        });
+      function copyResult() {
+        const text = document.getElementById("outputText").textContent;
+        navigator.clipboard.writeText(text);
+        alert("Copied to clipboard!");
       }
     </script>
   </body>
