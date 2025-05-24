@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lab Price Checker Yome labbing </title>
+    <title>Lab Price Checker Yome labbing</title>
     <style>
       * {
         box-sizing: border-box;
@@ -110,6 +110,24 @@
         margin-top: 1rem;
         color: #888;
       }
+
+      #outputText {
+        white-space: pre-wrap; /* allows \n line breaks to work */
+        word-wrap: break-word; /* break long words to avoid overflow */
+        overflow-wrap: break-word; /* better support for long unbroken strings */
+        max-width: 100%;
+        overflow: auto; /* adds scrollbars if still needed */
+      }
+      #result {
+        max-width: 90%;
+        width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #f2f2f2;
+        border-radius: 12px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        word-wrap: break-word;
+      }
     </style>
   </head>
   <body>
@@ -154,21 +172,22 @@
 
         resultDiv.style.display = "none";
 
-  const loadingMessages = [
-    "🧪 Mixing chemicals...",
-    "📡 Contacting lab servers...",
-    "🔍 Analyzing molecules...",
-    "⏳ Calculating pricing magic...",
-    "🧬 Running genetic scans...",
-    "🤖 Talking to the AI...",
-    "💾 Loading test results...",
-    "🌡️ Heating the centrifuge...",
-    "🔬 Looking under the microscope..."
-  ];
+        const loadingMessages = [
+          "🧪 Mixing chemicals...",
+          "📡 Contacting lab servers...",
+          "🔍 Analyzing molecules...",
+          "⏳ Calculating pricing magic...",
+          "🧬 Running genetic scans...",
+          "🤖 Talking to the AI...",
+          "💾 Loading test results...",
+          "🌡️ Heating the centrifuge...",
+          "🔬 Looking under the microscope...",
+        ];
 
-  const randomMessage = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
-  loadingDiv.textContent = randomMessage;
-        
+        const randomMessage =
+          loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
+        loadingDiv.textContent = randomMessage;
+
         loadingDiv.style.display = "block";
 
         try {
