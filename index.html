@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lab Price Checker</title>
+    <title>Lab Price Checker Yome labbing </title>
     <style>
       * {
         box-sizing: border-box;
@@ -153,6 +153,22 @@
         const outputText = document.getElementById("outputText");
 
         resultDiv.style.display = "none";
+
+  const loadingMessages = [
+    "🧪 Mixing chemicals...",
+    "📡 Contacting lab servers...",
+    "🔍 Analyzing molecules...",
+    "⏳ Calculating pricing magic...",
+    "🧬 Running genetic scans...",
+    "🤖 Talking to the AI...",
+    "💾 Loading test results...",
+    "🌡️ Heating the centrifuge...",
+    "🔬 Looking under the microscope..."
+  ];
+
+  const randomMessage = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
+  loadingDiv.textContent = randomMessage;
+        
         loadingDiv.style.display = "block";
 
         try {
