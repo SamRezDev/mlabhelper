@@ -41,6 +41,7 @@
           opacity: 0;
           transform: translateY(10px);
         }
+
         to {
           opacity: 1;
           transform: translateY(0);
@@ -112,12 +113,17 @@
       }
 
       #outputText {
-        white-space: pre-wrap; /* allows \n line breaks to work */
-        word-wrap: break-word; /* break long words to avoid overflow */
-        overflow-wrap: break-word; /* better support for long unbroken strings */
+        white-space: pre-wrap;
+        /* allows \n line breaks to work */
+        word-wrap: break-word;
+        /* break long words to avoid overflow */
+        overflow-wrap: break-word;
+        /* better support for long unbroken strings */
         max-width: 100%;
-        overflow: auto; /* adds scrollbars if still needed */
+        overflow: auto;
+        /* adds scrollbars if still needed */
       }
+
       #result {
         max-width: 90%;
         width: 600px;
@@ -128,8 +134,74 @@
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         word-wrap: break-word;
       }
+
+      .waveform {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        margin: 2rem auto;
+        height: 60px;
+      }
+
+      .waveform .bar {
+        width: 8px;
+        height: 40px;
+        border-radius: 4px;
+        animation: bounce 1.2s infinite ease-in-out,
+          colorchange 3s infinite ease-in-out;
+      }
+
+      .waveform .bar1 {
+        animation-delay: -0.4s, 0s;
+      }
+      .waveform .bar2 {
+        animation-delay: -0.2s, 0.4s;
+      }
+      .waveform .bar3 {
+        animation-delay: 0s, 0.8s;
+      }
+      .waveform .bar4 {
+        animation-delay: 0.2s, 1.2s;
+      }
+      .waveform .bar5 {
+        animation-delay: 0.4s, 1.6s;
+      }
+
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: scaleY(1);
+        }
+        50% {
+          transform: scaleY(2.2);
+        }
+      }
+
+      @keyframes colorchange {
+        0% {
+          background: #61dafb; /* light blue */
+        }
+        25% {
+          background: #8e44ad; /* purple */
+        }
+        50% {
+          background: #f39c12; /* orange */
+        }
+        75% {
+          background: #16a085; /* teal */
+        }
+        100% {
+          background: #61dafb;
+        }
+      }
+
+      .hidden {
+        display: none;
+      }
     </style>
   </head>
+
   <body>
     <!-- LOGIN STEP -->
     <div id="login" class="login">
@@ -148,6 +220,13 @@
       <button onclick="submitQuery()">Submit</button>
       <div id="loading" class="loading" style="display: none">
         ⏳ Fetching data...
+      </div>
+      <div id="waveform-loader" class="waveform hidden">
+        <div class="bar bar1"></div>
+        <div class="bar bar2"></div>
+        <div class="bar bar3"></div>
+        <div class="bar bar4"></div>
+        <div class="bar bar5"></div>
       </div>
       <div id="result" class="result" style="display: none">
         <button class="copy-btn" onclick="copyResult()">Copy</button>
@@ -169,6 +248,7 @@
         const resultDiv = document.getElementById("result");
         const loadingDiv = document.getElementById("loading");
         const outputText = document.getElementById("outputText");
+        const loader = document.getElementById("waveform-loader");
 
         resultDiv.style.display = "none";
 
@@ -189,6 +269,7 @@
         loadingDiv.textContent = randomMessage;
 
         loadingDiv.style.display = "block";
+        loader.classList.remove("hidden"); // Show when loading starts
 
         try {
           const token = btoa(`${"placeholderIDC"}:${passwordR}`); // base64 encode
@@ -211,6 +292,7 @@
           outputText.textContent =
             data.myField || JSON.stringify(data, null, 2);
           loadingDiv.style.display = "none";
+          loader.classList.add("hidden");
           resultDiv.style.display = "block";
         } catch (err) {
           loadingDiv.textContent = "⚠️ An error occurred. Please try again.";
