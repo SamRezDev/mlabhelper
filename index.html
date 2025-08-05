@@ -20,7 +20,6 @@
         background-color: #f4f4f4;
       }
 
-      .container,
       .login {
         background: white;
         padding: 2rem;
@@ -30,10 +29,18 @@
         max-width: 500px;
         text-align: center;
         animation: fadeIn 0.5s ease-in-out;
+        background-color: #eaf0ff;
       }
 
-      .login {
-        background-color: #eaf0ff;
+      .container {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 800px;
+        text-align: center;
+        animation: fadeIn 0.5s ease-in-out;
       }
 
       @keyframes fadeIn {
@@ -216,21 +223,47 @@
     <!-- MAIN APP -->
     <div id="app" class="container" style="display: none">
       <h1>🧪 Lab Price Checker</h1>
-      <input type="text" id="query" placeholder="Enter test name..." />
-      <button onclick="submitQuery()">Submit</button>
-      <div id="loading" class="loading" style="display: none">
-        ⏳ Fetching data...
-      </div>
-      <div id="waveform-loader" class="waveform hidden">
-        <div class="bar bar1"></div>
-        <div class="bar bar2"></div>
-        <div class="bar bar3"></div>
-        <div class="bar bar4"></div>
-        <div class="bar bar5"></div>
-      </div>
-      <div id="result" class="result" style="display: none">
-        <button class="copy-btn" onclick="copyResult()">Copy</button>
-        <pre id="outputText"></pre>
+
+      <div
+        style="
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          grid-template-rows: auto auto;
+          gap: 10px;
+          width: 100%;
+          max-width: 1200px;
+          margin: auto;
+        "
+      >
+        <!-- Left input area -->
+        <div style="background: #fef8f5; padding: 20px; border-radius: 8px">
+          <input type="text" id="query" placeholder="Enter test name..." />
+          <button onclick="submitQuery()">Submit</button>
+        </div>
+
+        <!-- Right input area -->
+        <div style="background: #f5faff; padding: 20px; border-radius: 8px">
+          <button id="recordBtn">🎙️ Start Recording</button>
+          <pre id="userVoiceFeedback"></pre>
+        </div>
+
+        <!-- Full width bottom result -->
+        <div style="grid-column: 1 / span 2; padding: 20px; border-radius: 8px">
+          <div id="loading" class="loading" style="display: none">
+            ⏳ Fetching data...
+          </div>
+          <div id="waveform-loader" class="waveform hidden">
+            <div class="bar bar1"></div>
+            <div class="bar bar2"></div>
+            <div class="bar bar3"></div>
+            <div class="bar bar4"></div>
+            <div class="bar bar5"></div>
+          </div>
+          <div id="result" class="result" style="display: none">
+            <button class="copy-btn" onclick="copyResult()">Copy</button>
+            <pre id="outputText"></pre>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -296,9 +329,71 @@
           resultDiv.style.display = "block";
         } catch (err) {
           loadingDiv.textContent = "⚠️ An error occurred. Please try again.";
+
+          loader.classList.add("hidden");
         }
       }
 
+      let isRecording = false;
+      let mediaRecorder;
+      let audioChunks = [];
+
+      const button = document.getElementById("recordBtn");
+
+      button.addEventListener("click", async () => {
+        const resultDiv = document.getElementById("result");
+        const userVoiceFeedback = document.getElementById("userVoiceFeedback");
+        const loader = document.getElementById("waveform-loader");
+        if (!isRecording) {
+          // Start recording
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+          });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+
+          mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
+
+          mediaRecorder.onstop = async () => {
+            const blob = new Blob(audioChunks, { type: "audio/webm" });
+            const token = btoa(`${"placeholderIDC"}:${passwordR}`);
+            const formData = new FormData();
+            formData.append("file", blob, "recording.webm");
+            loader.classList.remove("hidden");
+            resultDiv.style.display = "none";
+
+            userVoiceFeedback.style.display = "none";
+            const res = await fetch(
+              "https://pika-poetic-crawdad.ngrok-free.app/webhook/80a265b1-0ad8-440c-937f-4973df7b9b50",
+              {
+                method: "POST",
+                headers: {
+                  "ngrok-skip-browser-warning": "true",
+                  Authorization: `Basic ${token}`,
+                },
+                body: formData,
+              }
+            );
+
+            const data = await res.json();
+            outputText.textContent =
+              data.myField || JSON.stringify(data, null, 2);
+            userVoiceFeedback.textContent = "You said this:" + data.userText;
+            userVoiceFeedback.style.display = "block";
+            resultDiv.style.display = "block";
+            loader.classList.add("hidden");
+          };
+
+          mediaRecorder.start();
+          isRecording = true;
+          button.textContent = "⏹️ Stop & Send";
+        } else {
+          // Stop recording and send
+          mediaRecorder.stop();
+          isRecording = false;
+          button.textContent = "🎙️ Start Recording";
+        }
+      });
       function copyResult() {
         const text = document.getElementById("outputText").textContent;
         navigator.clipboard.writeText(text);
