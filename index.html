@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lab Price Checker Yome labbing</title>
+    <title>Lab Price Checker</title>
     <style>
       * {
         box-sizing: border-box;
@@ -12,77 +12,44 @@
       }
 
       body {
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
         font-family: "Segoe UI", sans-serif;
         background-color: #f4f4f4;
+        padding: 1rem;
       }
 
-      .login {
-        background: white;
-        padding: 2rem;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        max-width: 500px;
-        text-align: center;
-        animation: fadeIn 0.5s ease-in-out;
-        background-color: #eaf0ff;
-      }
-
+      .login,
       .container {
-        background: white;
+        background: #eaf0ff;
         padding: 2rem;
         border-radius: 12px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        max-width: 800px;
-        text-align: center;
+        max-width: 600px;
+        margin: 2rem auto;
         animation: fadeIn 0.5s ease-in-out;
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
       }
 
       h1 {
         margin-bottom: 1rem;
         font-size: 1.5rem;
+        text-align: center;
         color: #333;
       }
 
-      input {
+      input,
+      button,
+      select {
         width: 100%;
         padding: 0.7rem;
         font-size: 1rem;
         margin-bottom: 1rem;
-        border: 1px solid #ccc;
         border-radius: 8px;
-        transition: border 0.2s;
-      }
-
-      input:focus {
-        border-color: #007bff;
-        outline: none;
+        border: 1px solid #ccc;
       }
 
       button {
-        padding: 0.7rem 1.5rem;
-        font-size: 1rem;
         border: none;
         background-color: #007bff;
         color: white;
-        border-radius: 8px;
         cursor: pointer;
         transition: background 0.3s;
       }
@@ -91,14 +58,35 @@
         background-color: #0056b3;
       }
 
-      .result {
-        margin-top: 1.5rem;
-        background-color: #f0f0f0;
+      .flex-container {
+        display: flex;
+
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .flex-item {
+        flex: 1 1 300px;
+        background: #fff;
         padding: 1rem;
         border-radius: 8px;
-        font-family: monospace;
+      }
+
+      .flex-item-alternate {
+        flex: 1 1 300px;
+        text-align: center;
+        background: #ffffff00;
+        padding: 1rem;
+        border-radius: 8px;
+      }
+      .result,
+      #userVoiceFeedback {
+        margin-top: 1rem;
+        background: #f2f2f2;
+        padding: 1rem;
+        border-radius: 8px;
         white-space: pre-wrap;
-        position: relative;
+        font-family: monospace;
       }
 
       .copy-btn {
@@ -114,40 +102,12 @@
         font-size: 0.8rem;
       }
 
-      .loading {
-        margin-top: 1rem;
-        color: #888;
-      }
-
-      #outputText {
-        white-space: pre-wrap;
-        /* allows \n line breaks to work */
-        word-wrap: break-word;
-        /* break long words to avoid overflow */
-        overflow-wrap: break-word;
-        /* better support for long unbroken strings */
-        max-width: 100%;
-        overflow: auto;
-        /* adds scrollbars if still needed */
-      }
-
-      #result {
-        max-width: 90%;
-        width: 600px;
-        margin: 20px auto;
-        padding: 20px;
-        background-color: #f2f2f2;
-        border-radius: 12px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        word-wrap: break-word;
-      }
-
       .waveform {
         display: flex;
         justify-content: center;
         align-items: center;
         gap: 6px;
-        margin: 2rem auto;
+        margin: 1rem 0;
         height: 60px;
       }
 
@@ -159,19 +119,19 @@
           colorchange 3s infinite ease-in-out;
       }
 
-      .waveform .bar1 {
+      .bar1 {
         animation-delay: -0.4s, 0s;
       }
-      .waveform .bar2 {
+      .bar2 {
         animation-delay: -0.2s, 0.4s;
       }
-      .waveform .bar3 {
+      .bar3 {
         animation-delay: 0s, 0.8s;
       }
-      .waveform .bar4 {
+      .bar4 {
         animation-delay: 0.2s, 1.2s;
       }
-      .waveform .bar5 {
+      .bar5 {
         animation-delay: 0.4s, 1.6s;
       }
 
@@ -187,16 +147,16 @@
 
       @keyframes colorchange {
         0% {
-          background: #61dafb; /* light blue */
+          background: #61dafb;
         }
         25% {
-          background: #8e44ad; /* purple */
+          background: #8e44ad;
         }
         50% {
-          background: #f39c12; /* orange */
+          background: #f39c12;
         }
         75% {
-          background: #16a085; /* teal */
+          background: #16a085;
         }
         100% {
           background: #61dafb;
@@ -206,72 +166,88 @@
       .hidden {
         display: none;
       }
+      #outputText {
+        white-space: pre-wrap; /* keep line breaks and wrap text */
+        word-wrap: break-word; /* break long words */
+        overflow-wrap: break-word; /* ensure modern support */
+        max-width: 90vw; /* limit width to 90% of viewport */
+        box-sizing: border-box;
+        overflow-y: auto; /* add vertical scroll if needed */
+        padding: 1rem;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 500px) {
+        .flex-container {
+          flex-direction: column;
+        }
+      }
     </style>
   </head>
-
   <body>
-    <!-- LOGIN STEP -->
     <div id="login" class="login">
       <h1>🔐 Enter Password</h1>
-      <input type="password" id="password" placeholder="Enter password..." />
+      <input
+        autofocus
+        type="password"
+        id="password"
+        placeholder="Enter password..."
+      />
       <button onclick="savePassword()">Continue</button>
       <div id="loginError" style="color: red; margin-top: 1rem; display: none">
         Incorrect password.
       </div>
     </div>
 
-    <!-- MAIN APP -->
     <div id="app" class="container" style="display: none">
       <h1>🧪 Lab Price Checker</h1>
 
-      <div
-        style="
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          grid-template-rows: auto auto;
-          gap: 10px;
-          width: 100%;
-          max-width: 1200px;
-          margin: auto;
-        "
-      >
-        <!-- Left input area -->
-        <div style="background: #fef8f5; padding: 20px; border-radius: 8px">
+      <div class="flex-container">
+        <div class="flex-item">
           <input type="text" id="query" placeholder="Enter test name..." />
           <button onclick="submitQuery()">Submit</button>
         </div>
-
-        <!-- Right input area -->
-        <div style="background: #f5faff; padding: 20px; border-radius: 8px">
+        <div class="flex-item-alternate">OR</div>
+        <div class="flex-item">
           <button id="recordBtn">🎙️ Start Recording</button>
           <pre id="userVoiceFeedback"></pre>
         </div>
+      </div>
 
-        <!-- Full width bottom result -->
-        <div style="grid-column: 1 / span 2; padding: 20px; border-radius: 8px">
-          <div id="loading" class="loading" style="display: none">
-            ⏳ Fetching data...
-          </div>
-          <div id="waveform-loader" class="waveform hidden">
-            <div class="bar bar1"></div>
-            <div class="bar bar2"></div>
-            <div class="bar bar3"></div>
-            <div class="bar bar4"></div>
-            <div class="bar bar5"></div>
-          </div>
-          <div id="result" class="result" style="display: none">
-            <button class="copy-btn" onclick="copyResult()">Copy</button>
-            <pre id="outputText"></pre>
-          </div>
-        </div>
+      <div
+        id="loading"
+        class="loading"
+        style="text-align: center; display: none"
+      ></div>
+      <div id="waveform-loader" class="waveform hidden">
+        <div class="bar bar1"></div>
+        <div class="bar bar2"></div>
+        <div class="bar bar3"></div>
+        <div class="bar bar4"></div>
+        <div class="bar bar5"></div>
+      </div>
+
+      <div id="result" class="result" style="display: none; position: relative">
+        <button class="copy-btn" onclick="copyResult()">Copy</button>
+        <pre id="outputText"></pre>
       </div>
     </div>
 
     <script>
       let passwordR = "";
+
       function savePassword() {
         passwordR = document.getElementById("password").value;
-
         document.getElementById("login").style.display = "none";
         document.getElementById("app").style.display = "block";
       }
@@ -285,7 +261,7 @@
 
         resultDiv.style.display = "none";
 
-        const loadingMessages = [
+        const messages = [
           "🧪 Mixing chemicals...",
           "📡 Contacting lab servers...",
           "🔍 Analyzing molecules...",
@@ -297,16 +273,13 @@
           "🔬 Looking under the microscope...",
         ];
 
-        const randomMessage =
-          loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
-        loadingDiv.textContent = randomMessage;
-
+        loadingDiv.textContent =
+          messages[Math.floor(Math.random() * messages.length)];
         loadingDiv.style.display = "block";
-        loader.classList.remove("hidden"); // Show when loading starts
+        loader.classList.remove("hidden");
 
         try {
-          const token = btoa(`${"placeholderIDC"}:${passwordR}`); // base64 encode
-          // Example GET request to your n8n endpoint with QueryLab param
+          const token = btoa(`placeholderIDC:${passwordR}`);
           const res = await fetch(
             ` https://pika-poetic-crawdad.ngrok-free.app/webhook/80a265b1-0ad8-440c-937f-4973df7b9b48?QueryLab=${encodeURIComponent(
               query
@@ -321,15 +294,14 @@
           );
 
           const data = await res.json();
-
           outputText.textContent =
             data.myField || JSON.stringify(data, null, 2);
+
           loadingDiv.style.display = "none";
           loader.classList.add("hidden");
           resultDiv.style.display = "block";
         } catch (err) {
           loadingDiv.textContent = "⚠️ An error occurred. Please try again.";
-
           loader.classList.add("hidden");
         }
       }
@@ -338,14 +310,17 @@
       let mediaRecorder;
       let audioChunks = [];
 
-      const button = document.getElementById("recordBtn");
+      const recordBtn = document.getElementById("recordBtn");
 
-      button.addEventListener("click", async () => {
+      recordBtn.addEventListener("click", async () => {
         const resultDiv = document.getElementById("result");
         const userVoiceFeedback = document.getElementById("userVoiceFeedback");
         const loader = document.getElementById("waveform-loader");
+
         if (!isRecording) {
-          // Start recording
+          recordBtn.disabled = true;
+          recordBtn.textContent = "🎙️ Initializing...";
+
           const stream = await navigator.mediaDevices.getUserMedia({
             audio: true,
           });
@@ -356,29 +331,30 @@
 
           mediaRecorder.onstop = async () => {
             const blob = new Blob(audioChunks, { type: "audio/webm" });
-            const token = btoa(`${"placeholderIDC"}:${passwordR}`);
+            const token = btoa(`placeholderIDC:${passwordR}`);
             const formData = new FormData();
             formData.append("file", blob, "recording.webm");
+
             loader.classList.remove("hidden");
             resultDiv.style.display = "none";
-
             userVoiceFeedback.style.display = "none";
+
             const res = await fetch(
               "https://pika-poetic-crawdad.ngrok-free.app/webhook/80a265b1-0ad8-440c-937f-4973df7b9b50",
               {
                 method: "POST",
                 headers: {
-                  "ngrok-skip-browser-warning": "true",
                   Authorization: `Basic ${token}`,
+                  "ngrok-skip-browser-warning": "true",
                 },
                 body: formData,
               }
             );
 
             const data = await res.json();
-            outputText.textContent =
+            document.getElementById("outputText").textContent =
               data.myField || JSON.stringify(data, null, 2);
-            userVoiceFeedback.textContent = "You said this:" + data.userText;
+            userVoiceFeedback.textContent = "You said: " + data.userText;
             userVoiceFeedback.style.display = "block";
             resultDiv.style.display = "block";
             loader.classList.add("hidden");
@@ -386,14 +362,15 @@
 
           mediaRecorder.start();
           isRecording = true;
-          button.textContent = "⏹️ Stop & Send";
+          recordBtn.textContent = "⏹️ Stop & Send";
+          recordBtn.disabled = false;
         } else {
-          // Stop recording and send
           mediaRecorder.stop();
           isRecording = false;
-          button.textContent = "🎙️ Start Recording";
+          recordBtn.textContent = "🎙️ Start Recording";
         }
       });
+
       function copyResult() {
         const text = document.getElementById("outputText").textContent;
         navigator.clipboard.writeText(text);
