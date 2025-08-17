@@ -60,20 +60,20 @@
 
       .flex-container {
         display: flex;
-
+        flex-direction: column;
         flex-wrap: wrap;
         gap: 1rem;
       }
 
       .flex-item {
-        flex: 1 1 300px;
+        flex: 1 0 auto;
         background: #fff;
         padding: 1rem;
         border-radius: 8px;
       }
 
       .flex-item-alternate {
-        flex: 1 1 300px;
+        flex: 1 0 auto;
         text-align: center;
         background: #ffffff00;
         padding: 1rem;
@@ -186,12 +186,6 @@
           transform: translateY(0);
         }
       }
-
-      @media (max-width: 500px) {
-        .flex-container {
-          flex-direction: column;
-        }
-      }
     </style>
   </head>
   <body>
@@ -227,7 +221,7 @@
       <div
         id="loading"
         class="loading"
-        style="text-align: center; display: none"
+        style="text-align: center; display: none; margin-top: 5px"
       ></div>
       <div id="waveform-loader" class="waveform hidden">
         <div class="bar bar1"></div>
